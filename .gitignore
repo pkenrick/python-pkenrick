@@ -1,3 +1,6 @@
 __pycache__/
-new_app/__pycache/
+app/__pycache/
+app/models/__pycache__/
 /venv/*
+
+app.db

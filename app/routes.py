@@ -1,6 +1,10 @@
-from new_app import app
-from flask import render_template, flash, redirect
-from new_app.forms import LoginForm
+from app import app
+from flask import render_template, flash, redirect, url_for
+from app.forms import LoginForm
+from flask_login import current_user
+from app.models import User
+
+import logging
 
 @app.route('/')
 @app.route('/index')
@@ -20,11 +24,18 @@ def index():
 
 @app.route('/login', methods=['get', 'post'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
     form = LoginForm()
-    
+
     if form.validate_on_submit():
-        flash('Login requested for user {}, remember_me={}'.format(
-            form.username.data, form.remember_me.data))
-        return redirect('/index')
+        user = User.query.filter_by(username=form.username.data).first()
+
+        if user and user.check_password(form.password.data):
+                flash("You've been logged in!")
+                return redirect(url_for('index'))
+
+        flash('Invalid username and password combination')
 
     return render_template('login.html', title='login', form=form)
