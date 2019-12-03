@@ -4,15 +4,18 @@ from app.forms import LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post
 from werkzeug.urls import url_parse
+from datetime import datetime
 
 import logging
+
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    posts = current_user.posts.all()
+    posts = Post.query.all()
     return render_template('index.html', title='Home', posts=posts)
+
 
 @app.route('/register', methods=['get', 'post'])
 def register():
@@ -30,6 +33,7 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html', title='register', form=form)
+
 
 @app.route('/login', methods=['get', 'post'])
 def login():
@@ -54,7 +58,23 @@ def login():
 
     return render_template('login.html', title='login', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = user.posts.all()
+    return render_template('user.html', user=user, posts=posts)
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        # db.session.add(current_user)  Not necessary because Flask-Login's user loader actually already puts current_user in the session.
+        db.session.commit()
