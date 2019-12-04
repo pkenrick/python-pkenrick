@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, EditUserForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post
 from werkzeug.urls import url_parse
@@ -72,9 +72,26 @@ def user(username):
     posts = user.posts.all()
     return render_template('user.html', user=user, posts=posts)
 
+
+@app.route('/edit_profile', methods=['get', 'post'])
+def edit_profile():
+    form = EditUserForm()
+
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.about_me = form.about_me.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('user', username=current_user.username))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.about_me.data = current_user.about_me
+
+    return render_template('edit_profile.html', form=form)
+
+
 @app.before_request
 def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
-        # db.session.add(current_user)  Not necessary because Flask-Login's user loader actually already puts current_user in the session.
         db.session.commit()
