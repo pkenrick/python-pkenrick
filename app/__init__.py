@@ -16,34 +16,34 @@ login.login_view = 'login'
 
 from app import routes, models, errors
 
-# The following a handler to deal with any errors that the logger encounters.
+# The following is a handler to deal with any errors that the logger encounters.
 # The handler is a SMTPHandler (i.e. a handler which will deal with emails).
 # The handler is configured to send emails based on the mail server configured
 # in the environment variables (this could be a gmail email server for example).
-# if not app.debug:
-#     if app.config['MAIL_SERVER']:
-#
-#         # set up error logs to email
-#         auth = None
-#         if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-#             auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-#
-#         secure = None
-#         if app.config['MAIL_USE_TLS']:
-#             secure = ()
-#
-#         mail_handler = SMTPHandler(
-#             mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-#             fromaddr='no-reply@' + app.config['MAIL_SERVER'] + '.com',
-#             toaddrs=app.config['ADMINS'],
-#             subject='Microblogx Failure',
-#             credentials=auth,
-#             secure=secure
-#         )
-#
-#         mail_handler.setLevel(logging.ERROR)
-#         app.logger.addHandler(mail_handler)
-#
+if not app.debug:
+    if app.config['MAIL_SERVER']:
+
+        # set up error logs to email
+        auth = None
+        if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+            auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+
+        secure = None
+        if app.config['MAIL_USE_TLS']:
+            secure = ()
+
+        mail_handler = SMTPHandler(
+            mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
+            fromaddr='no-reply@' + app.config['MAIL_SERVER'] + '.com',
+            toaddrs=app.config['ADMINS'],
+            subject='Microblogx Failure',
+            credentials=auth,
+            secure=secure
+        )
+
+        mail_handler.setLevel(logging.ERROR)
+        app.logger.addHandler(mail_handler)
+
 #
 #         # set up error logs to file
 #         if not os.path.exists('logs'):
