@@ -2,6 +2,9 @@ __pycache__/
 app/__pycache/
 app/models/__pycache__/
 /venv/*
-.flaskenv
+
+flaskenv
 
 app.db
+
+.DS_Store
