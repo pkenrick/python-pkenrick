@@ -26,6 +26,15 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('That email is already taken')
 
+class PasswordResetRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+class PasswordResetForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired()])
+    password_confirmation = PasswordField('Confirm Password', validators=[EqualTo('password')])
+    submit = SubmitField('Reset Password')
+
 class EditUserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     about_me = TextAreaField('About Me', validators=[Length(min=0, max=140)])
@@ -40,3 +49,7 @@ class EditUserForm(FlaskForm):
             user = User.query.filter_by(username=username.data).first()
             if user:
                 raise ValidationError('That username is already taken')
+
+class PostForm(FlaskForm):
+    post = TextAreaField('Say something', validators=[DataRequired(), Length(min=1, max=140)])
+    submit = SubmitField('Submit')
