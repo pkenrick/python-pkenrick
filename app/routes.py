@@ -6,6 +6,7 @@ from app.models import User, Post
 from werkzeug.urls import url_parse
 from datetime import datetime
 from app.email import send_password_reset_email
+from flask_babel import _
 
 import logging
 
@@ -26,7 +27,7 @@ def index():
         post = Post(body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post is now live.')
+        flash(_('Your post is now live.'))
         return redirect(url_for('index'))
 
     page = request.args.get('page', 1, type=int)
@@ -57,7 +58,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('You have successfully registered.  Please log in')
+        flash(_('You have successfully registered.  Please log in'))
         return redirect(url_for('login'))
 
     return render_template('register.html', title='register', form=form)
@@ -82,7 +83,7 @@ def login():
 
             return redirect(next_page)
 
-        flash('Invalid username and password combination')
+        flash(_('Invalid username and password combination'))
 
     return render_template('login.html', title='Login', form=form)
 
@@ -103,7 +104,7 @@ def password_reset_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_email(user)
-        flash("If your email is registered, you will have been sent an email with password reset instructions.")
+        flash(_('If your email is registered, you will have been sent an email with password reset instructions.'))
         return redirect(url_for('login'))
 
     return render_template('password_reset_request.html', title='Password Reset Request', form=form)
@@ -116,14 +117,14 @@ def reset_password(token):
 
     user = User.verify_password_reset_token(token)
     if not user:
-        flash('Sorry, the password reset link is not valid.')
+        flash(_('Sorry, the password reset link is not valid.'))
         return redirect(url_for('login'))
 
     form = PasswordResetForm()
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
-        flash('Your password has been reset')
+        flash(_('Your password has been reset'))
         return redirect(url_for('login'))
 
     return render_template('password_reset.html', title='Password Reset', form=form)
@@ -148,7 +149,7 @@ def edit_profile():
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
         db.session.commit()
-        flash('Your changes have been saved.')
+        flash(_('Your changes have been saved.'))
         return redirect(url_for('user', username=current_user.username))
     elif request.method == 'GET':
         form.username.data = current_user.username
@@ -162,16 +163,16 @@ def edit_profile():
 def follow(username):
     user = User.query.filter_by(username=username).first()
     if not user:
-        flash('User {} cannot be found'.format(username))
+        flash(_('User %(username)s cannot be found', username=username))
         return redirect(url_for('index'))
 
     if user == current_user:
-        flash('Sorry, you cannot follow yourself')
+        flash(_('Sorry, you cannot follow yourself'))
         return redirect(url_for('index'))
 
     current_user.follow(user)
     db.session.commit()
-    flash('You are now following {}'.format(username))
+    flash(_('You are now following %(username)s', username=username))
     return redirect(url_for('user', username=username))
 
 @app.route('/unfollow/<username>')
@@ -179,14 +180,14 @@ def follow(username):
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if not user:
-        flash('User {} cannot be found'.format(username))
+        flash(_('User %(username)s cannot be found', username=username))
         return redirect(url_for('index'))
 
     if user == current_user:
-        flash('Sorry, you cannot unfollow yourself')
+        flash(_('Sorry, you cannot unfollow yourself'))
         return redirect(url_for('index'))
 
     current_user.unfollow(user)
     db.session.commit()
-    flash('You are not following {}'.format(username))
+    flash(_('You are not following %(username)s', username=username))
     return redirect(url_for('user', username=username))

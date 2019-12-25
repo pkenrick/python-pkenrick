@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block app_content %}
-  <h1>Hi, {{ current_user.username }}!</h1>
+  <h1>{{ _('Hi, %(username)s!', username=current_user.username) }}</h1>
   {% if form %}
   <form action="" method="post">
     {{ form.hidden_tag() }}
@@ -19,10 +19,19 @@
   {% for post in posts %}
     {% include '_post.html' %}
   {% endfor %}
-  {% if prev_url %}
-  <a href="{{ prev_url }}">Newer Posts</a>
-  {% endif %}
-  {% if next_url %}
-  <a href="{{ next_url }}">Older Posts</a>
-  {% endif %}
+
+  <nav aria-label='...'>
+    <ul class='pager'>
+      <li class='previous{% if not prev_url %} disabled{% endif %}'>
+        <a href="{{ prev_url or '#' }}">
+          <span aria-hidden='true'>&larr;</span> Newer posts
+        </a>
+      </li>
+      <li class='next{% if not next_url %} disabled{% endif %}'>
+        <a href="{{ next_url or '#' }}">
+          Older posts <span aria-hidden='true'>&rarr;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 {% endblock %}
