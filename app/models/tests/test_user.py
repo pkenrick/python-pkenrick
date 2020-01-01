@@ -1,6 +1,7 @@
 import pytest
 from app import app, db
 from app.models import User, Post
+from config import Config
 
 
 @pytest.fixture()

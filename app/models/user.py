@@ -1,4 +1,4 @@
-from app import db, login, app
+from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
@@ -6,6 +6,7 @@ from datetime import datetime
 from app.models.post import Post
 import jwt
 from time import time
+from flask import current_app
 
 followers = db.Table(
     'followers',
@@ -60,12 +61,12 @@ class User(UserMixin, db.Model):
         return followed_posts.union(own_posts).order_by(Post.timestamp.desc())
 
     def generate_password_reset_token(self, expires_in):
-        return jwt.encode({'password_reset': self.id, 'exp': time() + expires_in}, app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+        return jwt.encode({'password_reset': self.id, 'exp': time() + expires_in}, current_app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
 
     @staticmethod
     def verify_password_reset_token(token):
         try:
-            id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['password_reset']
+            id = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])['password_reset']
         except:
             return None
 
