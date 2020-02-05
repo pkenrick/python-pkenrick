@@ -1,6 +1,6 @@
 from app import db
 from flask import render_template, flash, redirect, url_for, request, g, jsonify, Blueprint, current_app
-from app.main.forms import EditUserForm, PostForm
+from app.main.forms import EditUserForm, PostForm, SearchForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post
 from werkzeug.urls import url_parse
@@ -18,6 +18,7 @@ def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+        g.search_form = SearchForm()
     g.locale = str(get_locale())
 
 
@@ -25,6 +26,7 @@ def before_request():
 @bp.route('/index', methods=['get', 'post'])
 @login_required
 def index():
+    raise Exception("============== deliberate ==============")
     form = PostForm()
 
     if form.validate_on_submit():
@@ -128,3 +130,25 @@ def translate_text():
         )
     }
     return jsonify(translation_result)
+
+
+@bp.route('/search')
+@login_required
+def search():
+    if not g.search_form.validate():
+        return redirect(url_for('main.explore'))
+
+    page = request.args.get('page', 1, type=int)
+    posts, total = Post.search(g.search_form.q.data, page, current_app.config['POSTS_PER_PAGE'])
+
+    if total <= page * current_app.config['POSTS_PER_PAGE']:
+        next_url = None
+    else:
+        next_url = url_for('main.search', q=g.search_form.q.data, page=page + 1)
+
+    if page == 1:
+        prev_url = None
+    else:
+        prev_url = url_for('main.search', q=g.search_form.q.data, page=page - 1)
+
+    return render_template('search.html', title='Search', posts = posts, next_url=next_url, prev_url=prev_url)

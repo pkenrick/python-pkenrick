@@ -1,4 +1,4 @@
-2020-01-29 19:09:45,873 ERROR: Exception on /edit_profile [POST] [in /Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py:1890]
+2020-01-29 19:09:53,745 ERROR: Exception on /edit_profile [POST] [in /Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py:1890]
 Traceback (most recent call last):
   File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1245, in _execute_context
     self.dialect.do_execute(
@@ -71,3 +71,41 @@ sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed
 [SQL: UPDATE user SET username=? WHERE user.id = ?]
 [parameters: ('gkenrick', 1)]
 (Background on this error at: http://sqlalche.me/e/gkpj)
+2020-01-29 19:11:14,537 ERROR: Exception on /index [GET] [in /Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py:1890]
+Traceback (most recent call last):
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 2446, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 1951, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 1820, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask_login/utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/williamkenrick/Projects/python/microblogx/app/main/routes.py", line 29, in index
+    print(form)
+UnboundLocalError: local variable 'form' referenced before assignment
+2020-01-29 19:12:01,839 ERROR: Exception on /index [GET] [in /Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py:1890]
+Traceback (most recent call last):
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 2446, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 1951, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 1820, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/williamkenrick/.pyenv/versions/3.8.0/lib/python3.8/site-packages/flask_login/utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/williamkenrick/Projects/python/microblogx/app/main/routes.py", line 29, in index
+    raise Exception("============ deliberate error ===========")
+UnboundLocalError: local variable 'form' referenced before assignment

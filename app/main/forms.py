@@ -3,6 +3,7 @@ from wtforms import StringField, TextAreaField, PasswordField, BooleanField, Sub
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from app.models import User
 from flask_babel import lazy_gettext as _l
+from flask import request
 
 class EditUserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -22,3 +23,13 @@ class EditUserForm(FlaskForm):
 class PostForm(FlaskForm):
     post = TextAreaField('Say something', validators=[DataRequired(), Length(min=1, max=140)])
     submit = SubmitField('Submit')
+
+class SearchForm(FlaskForm):
+    q = StringField('Search', validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        if 'formdata'  not in kwargs:
+            kwargs['formdata'] = request.args
+        if 'csrf_enabled' not in kwargs:
+            kwargs['csrf_enabled'] = False
+        super(SearchForm, self).__init__(*args, **kwargs)

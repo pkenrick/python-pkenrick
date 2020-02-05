@@ -12,6 +12,7 @@ from flask_moment import Moment
 from flask_babel import Babel
 from flask_babel import lazy_gettext as _l
 from flask import request
+from elasticsearch import Elasticsearch
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -26,6 +27,13 @@ babel = Babel()
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # set the elasticsearch url value from the env var.  If no env var set, the
+    # elasticsearch service is not initialized
+    if app.config['ELASTICSEARCH_URL']:
+        app.elasticsearch = Elasticsearch(app.config['ELASTICSEARCH_URL'])
+    else:
+        app.elasticsearch = None
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -48,47 +56,56 @@ def create_app(config_class=Config):
     # The handler is a SMTPHandler (i.e. a handler which will deal with emails).
     # The handler is configured to send emails based on the mail server configured
     # in the environment variables (this could be a gmail email server for example).
-    # if not app.debug and not app.testing:
-    #     if app.config['MAIL_SERVER']:
-    #
-    #         # set up error logs to email
-    #         auth = None
-    #         if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-    #             auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-    #
-    #         secure = None
-    #         if app.config['MAIL_USE_TLS']:
-    #             secure = ()
-    #
-    #         mail_handler = SMTPHandler(
-    #             mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-    #             fromaddr='no-reply@' + app.config['MAIL_SERVER'] + '.com',
-    #             toaddrs=app.config['ADMINS'],
-    #             subject='Microblogx Failure',
-    #             credentials=auth,
-    #             secure=secure
-    #         )
-    #
-    #         mail_handler.setLevel(logging.ERROR)
-    #         app.logger.addHandler(mail_handler)
+    if not app.debug and not app.testing:
+        if app.config['MAIL_SERVER']:
 
-    #
-    #         # set up error logs to file
-    #         if not os.path.exists('logs'):
-    #             os.mkdir('logs')
-    #         file_handler = RotatingFileHandler(
-    #             'logs/microblogx.log',
-    #             maxBytes=10240,
-    #             backupCount=10
-    #         )
-    #         file_handler.setFormatter(logging.Formatter(
-    #             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-    #         ))
-    #         file_handler.setLevel(logging.INFO)
-    #         app.logger.addHandler(file_handler)
+            # set up error logs to email
+            auth = None
+            if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+                auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+
+            secure = None
+            if app.config['MAIL_USE_TLS']:
+                secure = ()
+
+            mail_handler = SMTPHandler(
+                mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
+                fromaddr='no-reply@' + app.config['MAIL_SERVER'] + '.com',
+                toaddrs=app.config['ADMINS'],
+                subject='Microblogx Failure',
+                credentials=auth,
+                secure=secure
+            )
+
+            mail_handler.setLevel(logging.ERROR)
+            app.logger.addHandler(mail_handler)
+
+
+    # set up error logs to file or to stdout
+    if not app.debug and not app.testing:
+        if app.config['LOG_TO_STDOUT']:
+            stream_handler = logging.StreamHandler()
+            stream_handler.setLevel(logging.INFO)
+            app.logger.addHandler(stream_handler)
+        else:
+            if not os.path.exists('logs'):
+                os.mkdir('logs')
+            file_handler = RotatingFileHandler(
+                'logs/microblogx.log',
+                maxBytes=10240,
+                backupCount=10
+            )
+            file_handler.setFormatter(logging.Formatter(
+                '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+            ))
+            file_handler.setLevel(logging.INFO)
+            app.logger.addHandler(file_handler)
+
+
+            app.logger.setLevel(logging.INFO)
+            app.logger.info('Microblog startup')
 
     return app
-
 
 @babel.localeselector
 def get_locale():
