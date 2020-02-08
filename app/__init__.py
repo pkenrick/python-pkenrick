@@ -80,6 +80,10 @@ def create_app(config_class=Config):
             mail_handler.setLevel(logging.ERROR)
             app.logger.addHandler(mail_handler)
 
+    # logging.basicConfig(level=logging.INFO)
+    # logging.logMultiprocessing = 0
+    # logger = logging.getLogger(__name__)
+    # logger.setLevel(logging.INFO)
 
     # set up error logs to file or to stdout
     if not app.debug and not app.testing:
@@ -102,8 +106,8 @@ def create_app(config_class=Config):
             app.logger.addHandler(file_handler)
 
 
-            app.logger.setLevel(logging.INFO)
-            app.logger.info('Microblog startup')
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Microblog startup')
 
     return app
 

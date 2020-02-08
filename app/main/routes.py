@@ -26,7 +26,12 @@ def before_request():
 @bp.route('/index', methods=['get', 'post'])
 @login_required
 def index():
+    print("-----something----")
+    current_app.logger.info("lskdjflksjd")
+    logging.info('---------- about to raise error --------------')
     raise Exception("============== deliberate ==============")
+    logging.info('---------- done raising error --------------')
+
     form = PostForm()
 
     if form.validate_on_submit():
