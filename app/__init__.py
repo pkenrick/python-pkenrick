@@ -80,10 +80,9 @@ def create_app(config_class=Config):
             mail_handler.setLevel(logging.ERROR)
             app.logger.addHandler(mail_handler)
 
-    # logging.basicConfig(level=logging.INFO)
-    # logging.logMultiprocessing = 0
-    # logger = logging.getLogger(__name__)
-    # logger.setLevel(logging.INFO)
+
+    # root_logger = logging.getLogger()
+    # root_logger.setLevel(logging.INFO)
 
     # set up error logs to file or to stdout
     if not app.debug and not app.testing:
