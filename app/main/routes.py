@@ -26,8 +26,6 @@ def before_request():
 @bp.route('/index', methods=['get', 'post'])
 @login_required
 def index():
-    current_app.logger.info("======= app logger =========")
-    logging.info("=========== root logger ==========")
     form = PostForm()
 
     if form.validate_on_submit():

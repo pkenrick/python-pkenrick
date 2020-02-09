@@ -8,3 +8,5 @@ app/models/__pycache__/
 app.db
 
 .DS_Store
+
+messages.pot
