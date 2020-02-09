@@ -2,6 +2,7 @@ __pycache__/
 app/__pycache/
 app/models/__pycache__/
 /venv/*
+/logs/*
 
 .env
 
